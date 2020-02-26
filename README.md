@@ -1,3 +1,6 @@
+Spotify for Logitech G510 
+=========================
+
 Linux based client application for writing spotify dbus information to a Logitech G510 device.
 
 #### Description
