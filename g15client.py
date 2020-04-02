@@ -1,8 +1,8 @@
+#!/bin/python
 import socket
 import time
-
-from enum import Enum
 from datetime import datetime
+from enum import Enum
 
 import dbus
 
@@ -11,15 +11,28 @@ from render.font import Font
 
 class SpotifyClient(object):
 
-    def __init__(self):
-        self.session_bus = dbus.SessionBus()
-        self.proxy = self.session_bus.get_object('org.mpris.MediaPlayer2.spotify', '/org/mpris/MediaPlayer2')
-        self.props_interface = dbus.Interface(self.proxy, dbus_interface='org.freedesktop.DBus.Properties')
+    def __init__(self, props_interface):
 
-        self.player_props = self.props_interface.GetAll("org.mpris.MediaPlayer2.Player")
+        self.player_props = props_interface.GetAll("org.mpris.MediaPlayer2.Player")
 
         self.metadata = Metadata(self.player_props["Metadata"])
         self.playback_status = self.player_props["PlaybackStatus"]
+
+    @classmethod
+    def init(cls):
+
+        bus_name = 'org.mpris.MediaPlayer2.spotify'
+        object_path = '/org/mpris/MediaPlayer2'
+
+        while True:
+            try:
+                proxy = dbus.SessionBus().get_object(bus_name, object_path)
+                props_interface = dbus.Interface(proxy, dbus_interface='org.freedesktop.DBus.Properties')
+                break
+            except dbus.DBusException:
+                time.sleep(0.5)
+
+        return SpotifyClient(props_interface)
 
     def __repr__(self):
         return "Artist: %s\nAlbum: %s\nTitle: %s" % \
@@ -33,7 +46,7 @@ class Metadata(object):
         self.metadata = metadata
 
     def get_artist(self):
-        return self.metadata["xesam:artist"][0]
+        return self.metadata["xesam:artist"][0] if len(self.metadata["xesam:artist"]) else ""
 
     def get_title(self):
         return self.metadata["xesam:title"]
@@ -150,20 +163,30 @@ class FontWrapper(object):
         return self.font.render_text(text)
 
 
-if __name__ == "__main__":
-
+def main():
     g15 = G15()
 
-    last_hash = None
-    while True:
-        spotify_client = SpotifyClient()
+    info = (get_time_string(), "Waiting for Spotify")
+    g15.write(info)
 
-        now = datetime.now().strftime("%Y-%m-%d | %H:%M | %a")
+    last_hash = hash(info)
+
+    while True:
+
+        spotify_client = SpotifyClient.init()
 
         # Write to display only if content has changed
-        info = (now, spotify_client.metadata.get_artist(), spotify_client.metadata.get_title())
+        info = (get_time_string(), spotify_client.metadata.get_artist(), spotify_client.metadata.get_title())
         if last_hash != hash(info):
             g15.write(info)
             last_hash = hash(info)
 
         time.sleep(1)
+
+
+def get_time_string():
+    return datetime.now().strftime("%Y-%m-%d | %H:%M | %a")
+
+
+if __name__ == "__main__":
+    main()
