@@ -1,4 +1,5 @@
 #!/bin/python
+import os
 import socket
 import time
 from datetime import datetime
@@ -98,7 +99,10 @@ class G15(object):
         # Initialize empty character buffer for screen
         self.clear()
 
-        font_path = "/usr/share/fonts/nerd-fonts-complete/ttf/Bitstream Vera Sans Mono Nerd Font Complete Mono.ttf"
+        font_path = "/usr/share/fonts/nerd-fonts-complete/TTF/Bitstream Vera Sans Mono Nerd Font Complete Mono.ttf"
+        if not os.path.isfile(font_path):
+            raise Exception("%s is not a valid font path" % font_path)
+
         self.font = FontWrapper(font_path, 10)
 
     def clear(self):
