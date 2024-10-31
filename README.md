@@ -14,7 +14,7 @@ rendered in monochrome and then translated into the `bytebuffer`.
 
 #### Requirements
 
- * [g15daemon](https://www.archlinux.org/packages/community/x86_64/g15daemon/)
+ * [g15daemon](https://aur.archlinux.org/packages/g15daemon)
  
 If running a G510 series keyboard, see the following links on patching:
  * [Arch wiki](https://wiki.archlinux.org/index.php/Logitech_Gaming_Keyboards#G510_on_g15daemon)
