@@ -99,7 +99,7 @@ class G15(object):
         # Initialize empty character buffer for screen
         self.clear()
 
-        font_path = "/usr/share/fonts/nerd-fonts-complete/TTF/Bitstream Vera Sans Mono Nerd Font Complete Mono.ttf"
+        font_path = "/usr/share/fonts/TTF/JetBrainsMonoNerdFont-Regular.ttf"
         if not os.path.isfile(font_path):
             raise Exception("%s is not a valid font path" % font_path)
 
